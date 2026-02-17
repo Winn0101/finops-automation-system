@@ -1,0 +1,35 @@
+{
+  "required_tags": [
+    {
+      "key": "Environment",
+      "values": ["Production", "Staging", "Development", "Testing"],
+      "enforcement": "strict"
+    },
+    {
+      "key": "Owner",
+      "values": [],
+      "enforcement": "strict",
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    },
+    {
+      "key": "CostCenter",
+      "values": [],
+      "enforcement": "strict"
+    },
+    {
+      "key": "Project",
+      "values": [],
+      "enforcement": "warning"
+    }
+  ],
+  "auto_tag_rules": {
+    "creation_time": true,
+    "creator": true,
+    "last_modified": true
+  },
+  "enforcement_actions": {
+    "non_compliant_action": "notify",
+    "grace_period_days": 7,
+    "auto_remediate": false
+  }
+}

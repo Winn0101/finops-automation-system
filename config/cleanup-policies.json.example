@@ -1,0 +1,44 @@
+{
+  "cleanup_rules": {
+    "ec2_instances": {
+      "enabled": true,
+      "idle_days": 7,
+      "action": "stop",
+      "notify_before_action": true,
+      "notification_days": 2,
+      "exclude_tags": ["DoNotStop", "Production"]
+    },
+    "ebs_volumes": {
+      "enabled": true,
+      "unattached_days": 7,
+      "action": "snapshot_and_delete",
+      "exclude_tags": ["DoNotDelete"]
+    },
+    "elastic_ips": {
+      "enabled": true,
+      "unassociated_days": 3,
+      "action": "release",
+      "notify_before_action": true
+    },
+    "old_snapshots": {
+      "enabled": true,
+      "retention_days": 90,
+      "action": "delete",
+      "keep_minimum": 3
+    },
+    "unused_load_balancers": {
+      "enabled": true,
+      "no_traffic_days": 7,
+      "action": "delete",
+      "notify_before_action": true
+    },
+    "old_ami": {
+      "enabled": true,
+      "retention_days": 180,
+      "action": "deregister",
+      "keep_minimum": 2
+    }
+  },
+  "dry_run": true,
+  "notification_channels": ["email", "slack"]
+}
