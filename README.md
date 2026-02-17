@@ -398,6 +398,3 @@ For issues or questions:
 - [FinOps Foundation](https://www.finops.org/)
 - [AWS Well-Architected Framework - Cost Optimization](https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/welcome.html)
 
----
-
-**Happy Cost Optimizing! 💰**
