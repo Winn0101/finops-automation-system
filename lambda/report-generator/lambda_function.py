@@ -393,10 +393,10 @@ def generate_html_report(report):
 </head>
 <body>
     <div class="container">
-        <h1>📊 FinOps Report</h1>
+        <h1>FinOps Report</h1>
         <p>Generated: {report['report_date']}</p>
         
-        <h2>💰 Cost Summary (Last 30 Days)</h2>
+        <h2>Cost Summary (Last 30 Days)</h2>
         <div class="metric">
             <div class="metric-label">Total Cost</div>
             <div class="metric-value">${report['cost_summary']['total_30_days']:.2f}</div>
@@ -448,7 +448,7 @@ def generate_html_report(report):
     )
     
     html += """
-        <h2>🎯 Recommendations</h2>
+        <h2>Recommendations</h2>
         <table>
             <thead>
                 <tr>
@@ -513,7 +513,7 @@ def generate_csv_report(report):
 
 def send_report_notification(report, report_files):
     """Send report notification"""
-    subject = f"📊 Weekly FinOps Report - ${report['cost_summary']['total_30_days']:.2f}"
+    subject = f"Weekly FinOps Report - ${report['cost_summary']['total_30_days']:.2f}"
     
     message = "AWS FinOps Weekly Report\n\n"
     message += f"Report Period: Last 30 days\n"

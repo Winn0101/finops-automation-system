@@ -2,19 +2,13 @@
 
 set -e
 
-echo "  Cleaning up FinOps Automation System..."
-
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+echo "Cleaning up FinOps Automation System..."
 
 cd "$(dirname "$0")/../terraform"
 
 # Confirm destruction
-echo -e "${RED}⚠️  WARNING: This will destroy all resources!${NC}"
-echo -e "${YELLOW}This includes:${NC}"
+echo "WARNING: This will destroy all resources!"
+echo "This includes:"
 echo "  - Lambda functions"
 echo "  - DynamoDB tables (with all data)"
 echo "  - S3 bucket (with all reports)"
@@ -25,12 +19,12 @@ echo ""
 read -p "Are you absolutely sure? Type 'destroy' to confirm: " confirm
 
 if [ "$confirm" != "destroy" ]; then
-    echo -e "${GREEN}Cleanup cancelled${NC}"
+    echo "Cleanup cancelled"
     exit 0
 fi
 
 # Empty S3 bucket first
-echo -e "${YELLOW}Emptying S3 bucket...${NC}"
+echo "Emptying S3 bucket..."
 S3_BUCKET=$(terraform output -raw s3_bucket_name 2>/dev/null || echo "")
 
 if [ -n "$S3_BUCKET" ]; then
@@ -38,11 +32,11 @@ if [ -n "$S3_BUCKET" ]; then
 fi
 
 # Destroy infrastructure
-echo -e "${YELLOW}Destroying infrastructure...${NC}"
+echo "Destroying infrastructure..."
 terraform destroy -auto-approve
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN} Cleanup completed successfully${NC}"
+    echo "Cleanup completed successfully"
     
     # Clean up local files
     rm -f tfplan
@@ -52,8 +46,8 @@ if [ $? -eq 0 ]; then
     rm -f .terraform.lock.hcl
     rm -f ../lambda/*.zip
     
-    echo -e "${GREEN}All resources have been removed${NC}"
+    echo "All resources have been removed"
 else
-    echo -e "${RED} Cleanup failed. Some resources may still exist.${NC}"
+    echo "Cleanup failed. Some resources may still exist."
     exit 1
 fi

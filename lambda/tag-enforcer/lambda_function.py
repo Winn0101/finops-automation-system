@@ -271,7 +271,7 @@ def send_compliance_notifications(non_compliant_resources, policies):
     if not non_compliant_resources:
         return
     
-    subject = f"🏷️  Tag Compliance Alert: {len(non_compliant_resources)} non-compliant resources"
+    subject = f"AWS Tag Compliance Alert: {len(non_compliant_resources)} non-compliant resources"
     
     message = "AWS Tag Compliance Report\n\n"
     message += f"Found {len(non_compliant_resources)} resources not compliant with tagging policies.\n\n"

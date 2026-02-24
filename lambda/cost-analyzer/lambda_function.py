@@ -225,7 +225,7 @@ def send_anomaly_alerts(anomalies):
     """Send SNS alerts for detected anomalies"""
     high_severity = [a for a in anomalies if a['severity'] == 'high']
     
-    subject = f"🚨 Cost Anomaly Detected: {len(anomalies)} anomalies found"
+    subject = f"AWS Cost Anomaly Detected: {len(anomalies)} anomalies found"
     
     message = "AWS Cost Anomaly Alert\n\n"
     message += f"Detected {len(anomalies)} cost anomalies:\n\n"

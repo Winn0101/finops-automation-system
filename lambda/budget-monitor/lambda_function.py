@@ -205,7 +205,7 @@ def send_budget_alerts(alerts, month_spending, today_spending):
     critical_alerts = [a for a in alerts if a['severity'] == 'critical']
     
     if critical_alerts:
-        subject = "🚨 CRITICAL: AWS Budget Exceeded"
+        subject = "CRITICAL: AWS Budget Exceeded"
     else:
         subject = "⚠️ AWS Budget Warning"
     
@@ -218,7 +218,7 @@ def send_budget_alerts(alerts, month_spending, today_spending):
     message += "-" * 50 + "\n"
     
     for alert in alerts:
-        icon = "🚨" if alert['severity'] == 'critical' else "⚠️"
+        icon = "" if alert['severity'] == 'critical' else "⚠️"
         message += f"{icon} {alert['message']} ({alert['percent']:.1f}%)\n\n"
     
     message += "\nPlease review your AWS spending and consider taking action to reduce costs.\n"

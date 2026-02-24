@@ -2,19 +2,13 @@
 
 set -e
 
-echo " Testing FinOps Automation System..."
-
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+echo "Testing FinOps Automation System..."
 
 # Get outputs
 cd "$(dirname "$0")/../terraform"
 
 if [ ! -f "../deployment-outputs.json" ]; then
-    echo -e "${YELLOW}Fetching outputs...${NC}"
+    echo "Fetching outputs..."
     terraform output -json > ../deployment-outputs.json
 fi
 
@@ -26,102 +20,102 @@ BUDGET_MONITOR=$(terraform output -json | jq -r '.lambda_functions.value.budget_
 REPORT_GENERATOR=$(terraform output -json | jq -r '.lambda_functions.value.report_generator')
 S3_BUCKET=$(terraform output -json | jq -r '.s3_bucket_name.value')
 
-echo -e "${GREEN}Testing Lambda functions...${NC}"
+echo "Testing Lambda functions..."
 
 # Test 1: Cost Analyzer
-echo -e "${YELLOW}Test 1: Running Cost Analyzer...${NC}"
+echo "Test 1: Running Cost Analyzer..."
 aws lambda invoke \
     --function-name "$COST_ANALYZER" \
     --log-type Tail \
     /tmp/cost-analyzer-output.json > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Cost Analyzer executed successfully${NC}"
+    echo "Cost Analyzer executed successfully"
     cat /tmp/cost-analyzer-output.json | jq '.'
 else
-    echo -e "${RED}✗ Cost Analyzer failed${NC}"
+    echo "Cost Analyzer failed"
 fi
 
 echo ""
 
 # Test 2: Resource Scanner
-echo -e "${YELLOW}Test 2: Running Resource Scanner...${NC}"
+echo "Test 2: Running Resource Scanner..."
 aws lambda invoke \
     --function-name "$RESOURCE_SCANNER" \
     --log-type Tail \
     /tmp/resource-scanner-output.json > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Resource Scanner executed successfully${NC}"
+    echo "Resource Scanner executed successfully"
     cat /tmp/resource-scanner-output.json | jq '.'
 else
-    echo -e "${RED}✗ Resource Scanner failed${NC}"
+    echo "Resource Scanner failed"
 fi
 
 echo ""
 
 # Test 3: Tag Enforcer
-echo -e "${YELLOW}Test 3: Running Tag Enforcer...${NC}"
+echo "Test 3: Running Tag Enforcer..."
 aws lambda invoke \
     --function-name "$TAG_ENFORCER" \
     --log-type Tail \
     /tmp/tag-enforcer-output.json > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Tag Enforcer executed successfully${NC}"
+    echo "Tag Enforcer executed successfully"
     cat /tmp/tag-enforcer-output.json | jq '.'
 else
-    echo -e "${RED}✗ Tag Enforcer failed${NC}"
+    echo "Tag Enforcer failed"
 fi
 
 echo ""
 
 # Test 4: Budget Monitor
-echo -e "${YELLOW}Test 4: Running Budget Monitor...${NC}"
+echo "Test 4: Running Budget Monitor..."
 aws lambda invoke \
     --function-name "$BUDGET_MONITOR" \
     --log-type Tail \
     /tmp/budget-monitor-output.json > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Budget Monitor executed successfully${NC}"
+    echo "Budget Monitor executed successfully"
     cat /tmp/budget-monitor-output.json | jq '.'
 else
-    echo -e "${RED}✗ Budget Monitor failed${NC}"
+    echo "Budget Monitor failed"
 fi
 
 echo ""
 
 # Test 5: Report Generator
-echo -e "${YELLOW}Test 5: Running Report Generator...${NC}"
+echo "Test 5: Running Report Generator..."
 aws lambda invoke \
     --function-name "$REPORT_GENERATOR" \
     --log-type Tail \
     /tmp/report-generator-output.json > /dev/null 2>&1
 
 if [ $? -eq 0 ]; then
-    echo -e "${GREEN}✓ Report Generator executed successfully${NC}"
+    echo "Report Generator executed successfully"
     cat /tmp/report-generator-output.json | jq '.'
 else
-    echo -e "${RED}✗ Report Generator failed${NC}"
+    echo "Report Generator failed"
 fi
 
 echo ""
 
 # Check S3 for reports
-echo -e "${YELLOW}Checking S3 for generated reports...${NC}"
+echo "Checking S3 for generated reports..."
 REPORT_COUNT=$(aws s3 ls s3://$S3_BUCKET/reports/ | wc -l)
-echo -e "${GREEN}Found $REPORT_COUNT report(s) in S3${NC}"
+echo "Found $REPORT_COUNT report(s) in S3"
 
 if [ $REPORT_COUNT -gt 0 ]; then
-    echo -e "${YELLOW}Latest reports:${NC}"
+    echo "Latest reports:"
     aws s3 ls s3://$S3_BUCKET/reports/ --recursive | tail -5
 fi
 
 echo ""
 
 # Check DynamoDB tables
-echo -e "${YELLOW}Checking DynamoDB tables...${NC}"
+echo "Checking DynamoDB tables..."
 
 ANOMALIES_TABLE=$(terraform output -json | jq -r '.dynamodb_tables.value.cost_anomalies')
 IDLE_TABLE=$(terraform output -json | jq -r '.dynamodb_tables.value.idle_resources')
@@ -131,16 +125,16 @@ ANOMALIES_COUNT=$(aws dynamodb scan --table-name "$ANOMALIES_TABLE" --select COU
 IDLE_COUNT=$(aws dynamodb scan --table-name "$IDLE_TABLE" --select COUNT | jq -r '.Count')
 TAG_COUNT=$(aws dynamodb scan --table-name "$TAG_TABLE" --select COUNT | jq -r '.Count')
 
-echo -e "${GREEN}Cost Anomalies: $ANOMALIES_COUNT${NC}"
-echo -e "${GREEN}Idle Resources: $IDLE_COUNT${NC}"
-echo -e "${GREEN}Tag Compliance Records: $TAG_COUNT${NC}"
+echo "Cost Anomalies: $ANOMALIES_COUNT"
+echo "Idle Resources: $IDLE_COUNT"
+echo "Tag Compliance Records: $TAG_COUNT"
 
 echo ""
-echo -e "${GREEN}==================================${NC}"
-echo -e "${GREEN}Testing Complete!${NC}"
-echo -e "${GREEN}==================================${NC}"
+echo "=================================="
+echo "Testing Complete!"
+echo "=================================="
 echo ""
-echo -e "${YELLOW}Next steps:${NC}"
+echo "Next steps:"
 echo "1. Check your email for SNS notifications"
 echo "2. Download reports from S3:"
 echo "   aws s3 cp s3://$S3_BUCKET/reports/ ./reports/ --recursive"
